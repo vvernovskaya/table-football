@@ -9,7 +9,7 @@ FIELD_SIZE = (860, 600)
 
 class Ball():
     def __init__(self, canvas, x, y, vx, vy): # k - velocity rise coefficient
-                                              # self.life == 0 if there is no balls on the field
+                                              # self.life == 0 if there are no balls on the field
         pass
 
     def coords(self):
