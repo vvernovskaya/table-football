@@ -8,10 +8,28 @@ FIELD_SIZE = (860, 600)
 
 
 class Ball():
-    def __init__(self, canvas, x, y, vx, vy): # k - velocity rise coefficient
-                                              # self.life == 0 if there are no balls on the field
-        pass
-
+    def __init__(self, canvas, x, y, vx, vy, color = None): # k - velocity rise coefficient
+                                                            # self.life == 0 if there are no balls on the field
+        super().__init__()
+        self.canvas = canvas
+        self.x = x
+        self.y = y
+        self.r = 10
+        self.vx = vx
+        self.vy = vy
+        if color is None:
+            self.color = choice(['white'])
+        else:
+            self.color = color
+            
+        self.id = self.canvas.create_oval(
+            self.x - self.r,
+            self.y - self.r,
+            self.x + self.r,
+            self.y + self.r,
+            fill=self.color)
+    
+    
     def coords(self):
         pass
 
