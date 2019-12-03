@@ -31,7 +31,13 @@ class Ball():
     
     
     def coords(self):
-        pass
+        self.canvas.coords(
+                self.id,
+                self.x - self.r,
+                self.y - self.r,
+                self.x + self.r,
+                self.y + self.r
+        )
 
     def check_walls(self):
         pass
@@ -81,9 +87,34 @@ class Field(tk.Canvas):
     def __init__(self, master):
         super().__init__(master, background = "green")
 
-    def create_ball(self):
-        pass
+    def create_field(self):
+        canv.field = canv.create_rectangle (100, 100, 800, 600, outline = "black", fill = "green", width = 2)
 
+    def create_ball(self):
+        r = 10
+        canv.ball = canv.create_oval (450-r, 300-r, 450+r, 300+r, outline = "black",  fill = "blue", width = 2)
+    
+    def create_goals(self):
+        canv.goals1 = canv.create_rectangle (0, 250, 50, 350, outline = "black", fill = "silver", width = 2)
+        canv.goals2 = canv.create_rectangle (850, 250, 900, 350, outline = "black", fill = "silver", width = 2) 
+
+    def out_of_goals(self):
+        canv.out1 = canv.create_rectangle (0, 0, 50, 250, fill = "brown", width = 2)
+        canv.out2 = canv.create_rectangle (0, 350, 50, 600, fill = "brown", width = 2)
+        canv.out3 = canv.create_rectangle (850, 0, 900, 250, fill = "brown", width = 2)
+        canv.out4 = canv.create_rectangle (850, 350, 900, 600, fill = "brown", width = 2)
+    
+    def rods():
+        a = 5
+        canv.rod1 = canv.create_rectpangle (135 - a, 100, 135 + a, 600, fill = "silver", width = 2)
+        canv.rod2 = canv.create_rectpangle (225 - a, 100, 225 + a, 600, fill = "silver", width = 2)
+        canv.rod3 = canv.create_rectpangle (315 - a, 100, 315 + a, 600, fill = "silver", width = 2)
+        canv.rod4 = canv.create_rectpangle (405 - a, 100, 405 + a, 600, fill = "silver", width = 2)
+        canv.rod5 = canv.create_rectpangle (495 - a, 100, 495 + a, 600, fill = "silver", width = 2)
+        canv.rod6 = canv.create_rectpangle (585 - a, 100, 585 + a, 600, fill = "silver", width = 2)
+        canv.rod7 = canv.create_rectpangle (675 - a, 100, 675 + a, 600, fill = "silver", width = 2)
+        canv.rod8 = canv.create_rectpangle (765 - a, 100, 765 + a, 600, fill = "silver", width = 2)
+          
     def remove_ball(self):
         pass
 
@@ -91,8 +122,10 @@ class Field(tk.Canvas):
         pass
 
     def restart(self):
-        pass
-
+        self.stop()
+        self.remove_ball()
+        self.start()
+        
     def get_mouse_coords(self):
         abs_x = self.winfo_pointerx()
         abs_y = self.winfo_pointery()
@@ -131,8 +164,8 @@ class MainFrame(tk.Frame):
         self.score_blue_label.pack()
 
     def new_game(self):
-        pass
-
+        self.battlefield.restart()
+        
     def stop(self):
         pass
 
@@ -147,7 +180,12 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.geometry('{}x{}'.format(*WINDOW_SIZE))
+        
+        self.main_frame = MainFrame(self.master)
 
     def new_game(self):
         pass
 
+app = App()
+app.new_game()
+app.mainloop()
