@@ -28,8 +28,7 @@ class Ball():
             self.x + self.r,
             self.y + self.r,
             fill=self.color)
-    
-    
+
     def coords(self):
         self.canvas.coords(
                 self.id,
@@ -51,8 +50,10 @@ class Ball():
     def update(self):
         pass
 
-class RedFootballers():
+
+class RedFootballers:
     def __init__(self, canvas):
+        self.canvas = canvas
 
         # sticks
         self.id = canv.create_rectangle(270, 60, 280, 600, fill = 'grey')
@@ -60,96 +61,103 @@ class RedFootballers():
         self.id = canv.create_rectangle(750, 60, 760, 600, fill = 'grey')
 
         # footballers' x coords
-        self.x1r = 275
-        self.x2r = 525
-        self.x3r = 755
+        self.x1 = 275
+        self.x2 = 525
+        self.x3 = 755
 
-        self.dx1 = 160
-        self.dx3 = 320
+        self.y1 = 160
+        self.y2 = 160
+        self.y3 = 320
+
+        self.dy = 160
 
         self.r = 30
 
-        self.id = canv.create_oval(self.x1r - self.r, self.dx1 - self.r,
-                                   self.x1r + self.r, self.dx1 + self.r,
+        self.id = self.canvas.create_oval(self.x1 - self.r, self.y1 - self.r,
+                                   self.x1 + self.r, self.y1 + self.r,
                                    fill = 'red')
-        self.id = canv.create_oval(self.x1r - self.r, 2*self.dx1 - self.r,
-                                   self.x1r + self.r, 2*self.dx1 + self.r,
+        self.id = self.canvas.create_oval(self.x1 - self.r, self.dy + self.y1 - self.r,
+                                   self.x1 + self.r, self.y1 + self.dy + self.r,
                                    fill = 'red')
-        self.id = canv.create_oval(self.x1r - self.r, 3*self.dx1 - self.r,
-                                   self.x1r + self.r, 3*self.dx1 + self.r,
-                                   fill = 'red')
-
-        self.id = canv.create_oval(self.x2r - self.r, self.dx1 - self.r,
-                                   self.x2r + self.r, self.dx1 + self.r,
-                                   fill = 'red')
-        self.id = canv.create_oval(self.x2r - self.r, 2*self.dx1 - self.r,
-                                   self.x2r + r, 2*self.dx1 + self.r,
-                                   fill = 'red')
-        self.id = canv.create_oval(self.x2r - self.r, 3*self.dx1 - self.r,
-                                   self.x2r + self.r, 3*self.dx1 + self.r,
+        self.id = self.canvas.create_oval(self.x1 - self.r, 2 * self.dy + self.y1 - self.r,
+                                   self.x1 + self.r, 2 * self.dy + self.y1 + self.r,
                                    fill = 'red')
 
-        self.id = canv.create_oval(self.x3r - self.r, self.dx3 - self.r,
-                                   self.x3r + self.r, self.dx3 + self.r,
+        self.id = self.canvas.create_oval(self.x2 - self.r, self.y2 - self.r,
+                                   self.x2 + self.r, self.y2 + self.r,
+                                   fill = 'red')
+        self.id = self.canvas.create_oval(self.x2 - self.r, self.dy + self.y1 - self.r,
+                                   self.x2 + r, self.dy + self.y1 + self.r,
+                                   fill = 'red')
+        self.id = self.canvas.create_oval(self.x2 - self.r, 2 * self.dy + self.y1 - self.r,
+                                   self.x2 + self.r, 2 * self.dy + self.y1 + self.r,
                                    fill = 'red')
 
-    def bind(self):
-        pass
+        self.id = self.canvas.create_oval(self.x3 - self.r, self.y3 - self.r,
+                                   self.x3 + self.r, self.y3 + self.r,
+                                   fill = 'red')
 
-    def coords(self):
-        pass
-
-    def hit_ball(self):
+    def bind(self): # bind button press and release
         pass
 
     def update(self):
-        pass
+        self.y1 = self.canvas.get_mouse_coords[1] - self.dy
+        self.y2 = self.canvas.get_mouse_coords[1] - self.dy
+        self.y3 = self.canvas.get_mouse_coords[1]
 
-class BlueFootballers():
+
+class BlueFootballers:
     def __init__(self, canvas):
-        self.id = canv.create_rectangle(150, 60, 160, 600, fill = 'grey')
-        self.id = canv.create_rectangle(400, 60, 410, 600, fill = 'grey')
-        self.id = canv.create_rectangle(650, 60, 660, 600, fill = 'grey')
+        self.canvas = canvas
 
-        self.x1b = 155
-        self.x2b = 405
-        self.x3b = 655
+        self.id = self.canvas.create_rectangle(150, 60, 160, 600, fill = 'grey')
+        self.id = self.canvas.create_rectangle(400, 60, 410, 600, fill = 'grey')
+        self.id = self.canvas.create_rectangle(650, 60, 660, 600, fill = 'grey')
 
-        self.id = canv.create_oval(self.x3b - self.r, self.dx1 - self.r,
-                                   self.x3b + self.r, self.dx1 + self.r,
-                                   fill = 'blue')
-        self.id = canv.create_oval(self.x3b - self.r, 2*self.dx1 - self.r,
-                                   self.x3b + self.r, 2*self.dx1 + self.r,
-                                   fill = 'blue')
-        self.id = canv.create_oval(self.x3b - self.r, 3*self.dx1 - self.r,
-                                   self.x3b + self.r, 3*self.dx1 + self.r,
-                                   fill='blue')
+        self.x1 = 155
+        self.x2 = 405
+        self.x3 = 655
 
-        self.id = canv.create_oval(self.x2b - self.r, self.dx1 - self.r,
-                                   self.x2b + self.r, self.dx1 + self.r,
-                                   fill = 'blue')
-        self.id = canv.create_oval(self.x2b - self.r, 2*self.dx1 - self.r,
-                                   self.x2b + self.r, 2*self.dx1 + self.r,
-                                   fill = 'blue')
-        self.id = canv.create_oval(self.x2b - self.r, 3*self.dx1 - self.r,
-                                   self.x2b + self.r, 3*self.dx1 + self.r,
-                                   fill='blue')
+        self.y1 = 160
+        self.y2 = 160
+        self.y3 = 320
 
-        self.id = canv.create_oval(self.x1b - self.r, self.dx3 - self.r,
-                                   self.x1b + self.r, self.dx3 + self.r,
-                                   fill = 'blue')
+        self.dy = 160
+
+        self.r = 30
+
+        self.id = self.canvas.create_oval(self.x3 - self.r, self.y1 - self.r,
+                                          self.x3 + self.r, self.y1 + self.r,
+                                          fill = 'blue')
+        self.id = self.canvas.create_oval(self.x3 - self.r, self.dy + self.y1 - self.r,
+                                          self.x3 + self.r, self.dy + self.y1 + self.r,
+                                          fill = 'blue')
+        self.id = self.canvas.create_oval(self.x3 - self.r, 2 * self.dy + self.y1 - self.r,
+                                          self.x3 + self.r, 2 * self.dy + self.y1 + self.r,
+                                          fill='blue')
+
+        self.id = self.canvas.create_oval(self.x2 - self.r, self.y1 - self.r,
+                                          self.x2 + self.r, self.y1 + self.r,
+                                          fill = 'blue')
+        self.id = self.canvas.create_oval(self.x2 - self.r, self.dy + self.y2 - self.r,
+                                          self.x2 + self.r, self.dy + self.y2 + self.r,
+                                          fill = 'blue')
+        self.id = self.canvas.create_oval(self.x2 - self.r, 2 * self.dy + self.y2 - self.r,
+                                          self.x2 + self.r, 2 * self.dy + self.y2 + self.r,
+                                          fill='blue')
+
+        self.id = self.canvas.create_oval(self.x1 - self.r, self.y3 - self.r,
+                                          self.x1 + self.r, self.y3 + self.r,
+                                          fill = 'blue')
 
     def bind(self):
         pass
 
-    def coords(self):
-        pass
-
-    def hit_ball(self):
-        pass
-
     def update(self):
-        pass
+        self.y3 = self.canvas.get_mouse_coords[1] - self.dy
+        self.y2 = self.canvas.get_mouse_coords[1] - self.dy
+        self.y1 = self.canvas.get_mouse_coords[1]
+
 
 class Field(tk.Canvas):
     def __init__(self, master):
@@ -190,7 +198,6 @@ class Field(tk.Canvas):
         pass
 
     def restart(self):
-        self.stop()
         self.remove_ball()
         self.start()
         
@@ -253,6 +260,7 @@ class App(tk.Tk):
 
     def new_game(self):
         pass
+
 
 app = App()
 app.new_game()
