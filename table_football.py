@@ -47,7 +47,45 @@ class Ball():
 
 class RedFootballers():
     def __init__(self, canvas):
-        pass
+
+        # sticks
+        self.id = canv.create_rectangle(270, 60, 280, 600, fill = 'grey')
+        self.id = canv.create_rectangle(520, 60, 530, 600, fill = 'grey')
+        self.id = canv.create_rectangle(750, 60, 760, 600, fill = 'grey')
+
+        # footballers' x coords
+        self.x1r = 275
+        self.x2r = 525
+        self.x3r = 755
+
+        self.dx1 = 160
+        self.dx3 = 320
+
+        self.r = 30
+
+        self.id = canv.create_oval(self.x1r - self.r, self.dx1 - self.r,
+                                   self.x1r + self.r, self.dx1 + self.r,
+                                   fill = 'red')
+        self.id = canv.create_oval(self.x1r - self.r, 2*self.dx1 - self.r,
+                                   self.x1r + self.r, 2*self.dx1 + self.r,
+                                   fill = 'red')
+        self.id = canv.create_oval(self.x1r - self.r, 3*self.dx1 - self.r,
+                                   self.x1r + self.r, 3*self.dx1 + self.r,
+                                   fill = 'red')
+
+        self.id = canv.create_oval(self.x2r - self.r, self.dx1 - self.r,
+                                   self.x2r + self.r, self.dx1 + self.r,
+                                   fill = 'red')
+        self.id = canv.create_oval(self.x2r - self.r, 2*self.dx1 - self.r,
+                                   self.x2r + r, 2*self.dx1 + self.r,
+                                   fill = 'red')
+        self.id = canv.create_oval(self.x2r - self.r, 3*self.dx1 - self.r,
+                                   self.x2r + self.r, 3*self.dx1 + self.r,
+                                   fill = 'red')
+
+        self.id = canv.create_oval(self.x3r - self.r, self.dx3 - self.r,
+                                   self.x3r + self.r, self.dx3 + self.r,
+                                   fill = 'red')
 
     def bind(self):
         pass
@@ -63,7 +101,37 @@ class RedFootballers():
 
 class BlueFootballers():
     def __init__(self, canvas):
-        pass
+        self.id = canv.create_rectangle(150, 60, 160, 600, fill = 'grey')
+        self.id = canv.create_rectangle(400, 60, 410, 600, fill = 'grey')
+        self.id = canv.create_rectangle(650, 60, 660, 600, fill = 'grey')
+
+        self.x1b = 155
+        self.x2b = 405
+        self.x3b = 655
+
+        self.id = canv.create_oval(self.x3b - self.r, self.dx1 - self.r,
+                                   self.x3b + self.r, self.dx1 + self.r,
+                                   fill = 'blue')
+        self.id = canv.create_oval(self.x3b - self.r, 2*self.dx1 - self.r,
+                                   self.x3b + self.r, 2*self.dx1 + self.r,
+                                   fill = 'blue')
+        self.id = canv.create_oval(self.x3b - self.r, 3*self.dx1 - self.r,
+                                   self.x3b + self.r, 3*self.dx1 + self.r,
+                                   fill='blue')
+
+        self.id = canv.create_oval(self.x2b - self.r, self.dx1 - self.r,
+                                   self.x2b + self.r, self.dx1 + self.r,
+                                   fill = 'blue')
+        self.id = canv.create_oval(self.x2b - self.r, 2*self.dx1 - self.r,
+                                   self.x2b + self.r, 2*self.dx1 + self.r,
+                                   fill = 'blue')
+        self.id = canv.create_oval(self.x2b - self.r, 3*self.dx1 - self.r,
+                                   self.x2b + self.r, 3*self.dx1 + self.r,
+                                   fill='blue')
+
+        self.id = canv.create_oval(self.x1b - self.r, self.dx3 - self.r,
+                                   self.x1b + self.r, self.dx3 + self.r,
+                                   fill = 'blue')
 
     def bind(self):
         pass
