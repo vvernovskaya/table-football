@@ -33,16 +33,18 @@ class Ball:
             self.x + self.r,
             self.y + self.r
         )
-        print("coords updated")
         self.canvas.master.master.update()
 
     def remove_ball(self):
         self.canvas.delete(self.id)
 
     def hit(self):
+        print('hit')
         self.vx = -self.vx
         self.vy = -self.vy
-        self.update_coords()
+        self.x = self.x + 5
+        self.y = self.y + 5
+        self.update()
 
     def update(self):
         if self.y >= 600 or self.y <= 0:
@@ -137,7 +139,6 @@ class RedFootballers:
 
     def update(self):
         self.mouse_coords = self.canvas.get_mouse_coords()
-        print(self.mouse_coords)
         self.y1 = self.mouse_coords[1] - self.dy
         self.y2 = self.mouse_coords[1] - self.dy
         self.y3 = self.mouse_coords[1]
@@ -262,14 +263,15 @@ class Field(tk.Canvas):
     def check_hit(self):
         for i in range(len(self.red_footballers.footballers)):
             if (self.ball.x - self.red_footballers.footballers[i].x) ** 2 + \
-                    (self.ball.y - self.red_footballers.footballers[i].x) ** 2 \
+                    (self.ball.y - self.red_footballers.footballers[i].y) ** 2 \
                     <= (
-                    self.ball.r - self.red_footballers.footballers[i].r) ** 2:
+                    self.ball.r + self.red_footballers.footballers[i].r) ** 2:
                 self.ball.hit()
 
     def update(self):  # put root.after here
         self.ball.update()
         self.red_footballers.update()
+        self.check_hit()
         self.after(20, self.update)
 
 
