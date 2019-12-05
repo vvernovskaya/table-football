@@ -4,7 +4,7 @@ from random import randrange as rnd
 from random import randrange as rnd, choice
 
 
-WINDOW_SIZE = (900, 600)
+WINDOW_SIZE = (900, 700)
 FIELD_SIZE = (860, 600)
 
 
@@ -38,13 +38,13 @@ class Ball():
         self.canvas.delete(self.id)
     
     def update(self):
-        if self.y >= 600 or self.y <=60:
+        if self.y >= 600 or self.y <=0:
             self.vy = -self.vy
             if self.y >= 600:
                 self.y = 595
 
-            if self.y <= 60:
-                self.y = 65
+            if self.y <= 0:
+                self.y = 5
 
         if self.x >= 800 or self.x <= 0:
             self.vx = -self.vx
@@ -65,9 +65,9 @@ class RedFootballers:
         self.score = 0
 
         # sticks
-        self.id = canvas.create_rectangle(270, 60, 280, 600, fill='grey')
-        self.id = canvas.create_rectangle(520, 60, 530, 600, fill='grey')
-        self.id = canvas.create_rectangle(750, 60, 760, 600, fill='grey')
+        self.id = self.canvas.create_rectangle(270, 0, 280, 600, fill='grey')
+        self.id = self.canvas.create_rectangle(520, 0, 530, 600, fill='grey')
+        self.id = self.canvas.create_rectangle(750, 0, 760, 600, fill='grey')
 
         # footballers' x coords
         self.x1 = 275
@@ -96,7 +96,7 @@ class RedFootballers:
                                    self.x2 + self.r, self.y2 + self.r,
                                    fill='red')
         self.id = self.canvas.create_oval(self.x2 - self.r, self.dy + self.y1 - self.r,
-                                   self.x2 + r, self.dy + self.y1 + self.r,
+                                   self.x2 + self.r, self.dy + self.y1 + self.r,
                                    fill='red')
         self.id = self.canvas.create_oval(self.x2 - self.r, 2 * self.dy + self.y1 - self.r,
                                    self.x2 + self.r, 2 * self.dy + self.y1 + self.r,
@@ -121,9 +121,9 @@ class BlueFootballers:
 
         self.score = 0
 
-        self.id = self.canvas.create_rectangle(150, 60, 160, 600, fill = 'grey')
-        self.id = self.canvas.create_rectangle(400, 60, 410, 600, fill = 'grey')
-        self.id = self.canvas.create_rectangle(650, 60, 660, 600, fill = 'grey')
+        self.id = self.canvas.create_rectangle(150, 0, 160, 600, fill = 'grey')
+        self.id = self.canvas.create_rectangle(400, 0, 410, 600, fill = 'grey')
+        self.id = self.canvas.create_rectangle(650, 0, 660, 600, fill = 'grey')
 
         self.x1 = 155
         self.x2 = 405
@@ -172,7 +172,7 @@ class BlueFootballers:
 
 class Field(tk.Canvas):
     def __init__(self, master):
-        super().__init__(master, background = "green")
+        super().__init__(master, background="green")
         self.red_footballers = RedFootballers(self)
         self.blue_footballers = BlueFootballers(self)
         self.ball = None
@@ -222,9 +222,9 @@ class Field(tk.Canvas):
         if (self.ball.y >= 120) and (self.ball.y <= 330):
             self.ball.remove_ball()
             if self.ball.x >= 855:
-                self.blue_footballers.score += 1
+                self.master.red_goal()
             if self.ball.x <= 5:
-                self.red_footballers.score += 1
+                self.master.blue_goal()
 
     def update(self): # put root.after here
         pass
@@ -243,15 +243,19 @@ class MainFrame(tk.Frame):
         self.score_red_label = tk.Label(
             self,
             text=self.score_red_text.format(self.score_red),
-            font=("Times New Roman", 36)
+            font=("Times New Roman", 30)
         )
         self.score_blue_label = tk.Label(
             self,
             text=self.score_blue_text.format(self.score_blue),
-            font=("Times New Roman", 36)
+            font=("Times New Roman", 30)
         )
         self.score_red_label.pack()
         self.score_blue_label.pack()
+
+
+        self.field = Field(self)
+        self.field.pack(fill=tk.BOTH, expand=1)
 
     def new_game(self):
         pass
@@ -261,9 +265,13 @@ class MainFrame(tk.Frame):
 
     def red_goal(self):
         self.score_red += 1
+        self.score_red_label['text'] = self.score_red_text.format(
+            self.score_red)
 
     def blue_goal(self):
         self.score_blue += 1
+        self.score_blue_label['text'] = self.score_blue_text.format(
+            self.score_blue)
 
     def update(self): # put root.after here
         pass
@@ -273,8 +281,9 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.geometry('{}x{}'.format(*WINDOW_SIZE))
-        
+
         self.main_frame = MainFrame(self.master)
+        self.main_frame.pack(fill=tk.BOTH, expand=1)
 
     def new_game(self):
         pass
