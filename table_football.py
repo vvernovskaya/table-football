@@ -1,9 +1,10 @@
+import copy
 import math
 import tkinter as tk
 from random import randrange as rnd
 from random import randrange as rnd, choice
 
-WINDOW_SIZE = (900, 700)
+WINDOW_SIZE = (900, 650)
 FIELD_SIZE = (860, 600)
 DT = 30
 
@@ -40,29 +41,33 @@ class Ball:
 
     def hit(self):
         print('hit')
-        self.vx = -self.vx
-        self.vy = -self.vy
+        self.vx = -self.vx + 4*self.canvas.cos
+        self.vy = -self.vy + self.canvas.red_footballers.vy
         self.x = self.x + 5
         self.y = self.y + 5
         self.update()
 
     def update(self):
         if self.y >= 600 or self.y <= 0:
-            self.vy = -self.vy
             if self.y >= 600:
                 self.y = 595
 
             if self.y <= 0:
                 self.y = 5
 
-        if self.x >= 800 or self.x <= 0:
+            self.vy = -self.vy
+
+        if self.x >= 820 or self.x <= 70:
+            if self.x >= 820:
+                self.x = 815
+
+            if self.x <= 70:
+                self.x = 75
+
             self.vx = -self.vx
-            if self.x >= 860:
-                self.x = 855
 
-            if self.x <= 0:
-                self.x = 5
-
+        self.vx = 0.99*self.vx
+        self.vy = 0.99*self.vy
         self.x += self.vx
         self.y += self.vy
 
@@ -91,6 +96,9 @@ class Footballer:
                            self.x + self.r,
                            self.y + self.r)
 
+    def remove(self):
+        self.canvas.delete(self.id)
+
 
 class RedFootballers:
     def __init__(self, canvas):
@@ -113,6 +121,9 @@ class RedFootballers:
         self.dy = 160
 
         self.r = 30
+
+        self.vy = 0
+        self.pry = 0
 
         self.f1 = Footballer(canvas, 275, self.y1)
         self.f2 = Footballer(canvas, 275, self.dy + self.y1)
@@ -139,14 +150,21 @@ class RedFootballers:
 
     def update(self):
         self.mouse_coords = self.canvas.get_mouse_coords()
+        self.pry = copy.deepcopy(self.y1)
         self.y1 = self.mouse_coords[1] - self.dy
         self.y2 = self.mouse_coords[1] - self.dy
         self.y3 = self.mouse_coords[1]
 
+        self.vy = self.y1 - self.pry
         self.update_each_footballer()
 
         for i in range(len(self.footballers)):
             self.footballers[i].update_coords()
+
+    def remove_footballers(self):
+        print('remove footb')
+        for i in range(len(self.footballers)):
+            self.footballers[i].remove()
 
 
 class BlueFootballers:
@@ -206,6 +224,9 @@ class BlueFootballers:
     def bind(self):
         pass
 
+    def remove_footballers(self):
+        pass
+
     # def update(self):
     # self.y3 = self.canvas.get_mouse_coords[1] - self.dy
     # self.y2 = self.canvas.get_mouse_coords[1] - self.dy
@@ -218,6 +239,11 @@ class Field(tk.Canvas):
         self.ball = None
         self.red_footballers = None
         self.blue_footballers = None
+
+        self.mouse_coords = [None, None]
+        self.an = None
+        self.sin = None
+        self.cos = None
 
         self.out1 = self.create_rectangle(0, 0, 50, 250, fill="brown", width=2)
         self.out2 = self.create_rectangle(0, 350, 50, 600, fill="brown",
@@ -233,17 +259,23 @@ class Field(tk.Canvas):
                                             outline="black", fill="silver",
                                             width=2)
 
+        self.win_text = self.create_text(
+            WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2, text='aaaa', font=360)
+
     def start(self):
+        print('start')
         self.ball = Ball(self)
         self.red_footballers = RedFootballers(self)
         self.blue_footballers = BlueFootballers(self)
 
     def remove_ball(self):
         self.ball.remove_ball()
+        self.red_footballers.remove_footballers()
+        self.blue_footballers.remove_footballers()
 
     def restart(self):
         self.remove_ball()
-        self.start()
+        self.after(1500, self.start())
 
     def get_mouse_coords(self):
         abs_x = self.winfo_pointerx()
@@ -252,13 +284,14 @@ class Field(tk.Canvas):
         canvas_y = self.winfo_rooty()
         return [abs_x - canvas_x, abs_y - canvas_y]
 
-    def goal(self):
+    def check_goal(self):
         if (self.ball.y >= 210) and (self.ball.y <= 390):
-            self.ball.remove_ball()
-            if self.ball.x >= 855:
+            if self.ball.x >= 815:
                 self.master.red_goal()
-            if self.ball.x <= 5:
+                self.restart()
+            if self.ball.x <= 75:
                 self.master.blue_goal()
+                self.restart()
 
     def check_hit(self):
         for i in range(len(self.red_footballers.footballers)):
@@ -266,12 +299,25 @@ class Field(tk.Canvas):
                     (self.ball.y - self.red_footballers.footballers[i].y) ** 2 \
                     <= (
                     self.ball.r + self.red_footballers.footballers[i].r) ** 2:
+                self.mouse_coords = self.get_mouse_coords()
+                dx = self.mouse_coords[0] - self.red_footballers.footballers[i].x
+                dy = self.mouse_coords[1] - self.red_footballers.footballers[i].y
+                if dx != 0:
+                    self.an = math.atan2(dy, dx)
+                    self.sin = dy / math.sqrt(dx**2 + dy**2)
+                    self.cos = dx / math.sqrt(dx**2 + dy**2)
+                else:
+                    self.an = 1
+                    self.sin = 0
+                    self.cos = 0
+
                 self.ball.hit()
 
     def update(self):  # put root.after here
         self.ball.update()
         self.red_footballers.update()
         self.check_hit()
+        self.check_goal()
         self.after(20, self.update)
 
 
@@ -288,15 +334,15 @@ class MainFrame(tk.Frame):
         self.score_red_label = tk.Label(
             self,
             text=self.score_red_text.format(self.score_red),
-            font=("Times New Roman", 30)
+            font=("Times New Roman", 25)
         )
         self.score_blue_label = tk.Label(
             self,
             text=self.score_blue_text.format(self.score_blue),
-            font=("Times New Roman", 30)
+            font=("Times New Roman", 25)
         )
-        self.score_red_label.pack()
-        self.score_blue_label.pack()
+        self.score_red_label.pack(side=tk.TOP)
+        self.score_blue_label.pack(side=tk.TOP)
 
         self.field = Field(self)
         self.field.pack(fill=tk.BOTH, expand=1)
@@ -310,11 +356,28 @@ class MainFrame(tk.Frame):
 
     def red_goal(self):
         self.score_red += 1
+        if self.score_red == 6:
+            self.field.after(500, self.field.itemconfig(self.field.win_text,
+                                                        text='AAAAAAAAAA'))
+            self.field.after(2500, self.field.itemconfig(self.field.win_text,
+                                                         text=''))
+            self.score_red = 0
+            self.score_blue = 0
+
+        print(self.score_red)
         self.score_red_label['text'] = self.score_red_text.format(
             self.score_red)
 
     def blue_goal(self):
         self.score_blue += 1
+        if self.score_blue == 6:
+            self.field.after(500, self.field.itemconfig(self.field.win_text,
+                                                         text='AAAAAAAAAA'))
+            self.field.after(2500, self.field.itemconfig(self.field.win_text,
+                                                         text=''))
+            self.score_red = 0
+            self.score_blue = 0
+        print(self.score_blue)
         self.score_blue_label['text'] = self.score_blue_text.format(
             self.score_blue)
 
