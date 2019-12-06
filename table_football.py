@@ -41,10 +41,16 @@ class Ball:
 
     def hit(self):
         print('hit')
-        self.vx = -self.vx + 4*self.canvas.cos
+        print('start vx ', self.vx)
+        self.vx = -self.vx
         self.vy = -self.vy + self.canvas.red_footballers.vy
-        self.x = self.x + 5
-        self.y = self.y + 5
+        if self.vx <= 0:
+            self.vx -= abs(9*self.canvas.cos)
+            self.x -= 5
+        else:
+            self.vx += abs(3*self.canvas.cos)
+            self.x += 5
+        print(self.vx)
         self.update()
 
     def update(self):
@@ -57,12 +63,12 @@ class Ball:
 
             self.vy = -self.vy
 
-        if self.x >= 820 or self.x <= 70:
-            if self.x >= 820:
-                self.x = 815
+        if self.x >= 850 or self.x <= 50:
+            if self.x >= 850:
+                self.x = 835
 
-            if self.x <= 70:
-                self.x = 75
+            if self.x <= 50:
+                self.x = 55
 
             self.vx = -self.vx
 
@@ -75,7 +81,7 @@ class Ball:
 
 
 class Footballer:
-    def __init__(self, canvas, x, y):
+    def __init__(self, canvas, x, y, color):
         self.canvas = canvas
 
         self.x = x
@@ -87,7 +93,7 @@ class Footballer:
                 self.y - self.r,
                 self.x + self.r,
                 self.y + self.r,
-                fill='red')
+                fill=color)
 
     def update_coords(self):
         self.canvas.coords(self.id,
@@ -125,13 +131,13 @@ class RedFootballers:
         self.vy = 0
         self.pry = 0
 
-        self.f1 = Footballer(canvas, 275, self.y1)
-        self.f2 = Footballer(canvas, 275, self.dy + self.y1)
-        self.f3 = Footballer(canvas, 275, 2 * self.dy + self.y1)
-        self.f4 = Footballer(canvas, 525, self.y2)
-        self.f5 = Footballer(canvas, 525, self.dy + self.y1)
-        self.f6 = Footballer(canvas, 525, 2 * self.dy + self.y1)
-        self.f7 = Footballer(canvas, 755, self.y3)
+        self.f1 = Footballer(canvas, 275, self.y1, 'red')
+        self.f2 = Footballer(canvas, 275, self.dy + self.y1, 'red')
+        self.f3 = Footballer(canvas, 275, 2 * self.dy + self.y1, 'red')
+        self.f4 = Footballer(canvas, 525, self.y2, 'red')
+        self.f5 = Footballer(canvas, 525, self.dy + self.y1, 'red')
+        self.f6 = Footballer(canvas, 525, 2 * self.dy + self.y1, 'red')
+        self.f7 = Footballer(canvas, 755, self.y3, 'red')
 
         self.footballers = [self.f1, self.f2, self.f3, self.f4, self.f5,
                             self.f6, self.f7]
@@ -170,6 +176,7 @@ class RedFootballers:
 class BlueFootballers:
     def __init__(self, canvas):
         self.canvas = canvas
+        self.mouse_coords = [None, None]
 
         self.score = 0
 
@@ -181,51 +188,57 @@ class BlueFootballers:
         self.x2 = 405
         self.x3 = 655
 
-        self.y1 = 160
+        self.y3 = 160
         self.y2 = 160
-        self.y3 = 320
+        self.y1 = 320
 
         self.dy = 160
 
         self.r = 30
 
-        self.id = self.canvas.create_oval(self.x3 - self.r, self.y1 - self.r,
-                                          self.x3 + self.r, self.y1 + self.r,
-                                          fill='blue')
-        self.id = self.canvas.create_oval(self.x3 - self.r,
-                                          self.dy + self.y1 - self.r,
-                                          self.x3 + self.r,
-                                          self.dy + self.y1 + self.r,
-                                          fill='blue')
-        self.id = self.canvas.create_oval(self.x3 - self.r,
-                                          2 * self.dy + self.y1 - self.r,
-                                          self.x3 + self.r,
-                                          2 * self.dy + self.y1 + self.r,
-                                          fill='blue')
+        self.vy = 0
+        self.pry = 0
 
-        self.id = self.canvas.create_oval(self.x2 - self.r, self.y1 - self.r,
-                                          self.x2 + self.r, self.y1 + self.r,
-                                          fill='blue')
-        self.id = self.canvas.create_oval(self.x2 - self.r,
-                                          self.dy + self.y2 - self.r,
-                                          self.x2 + self.r,
-                                          self.dy + self.y2 + self.r,
-                                          fill='blue')
-        self.id = self.canvas.create_oval(self.x2 - self.r,
-                                          2 * self.dy + self.y2 - self.r,
-                                          self.x2 + self.r,
-                                          2 * self.dy + self.y2 + self.r,
-                                          fill='blue')
+        self.f1 = Footballer(canvas, 655, self.y2, 'blue')
+        self.f2 = Footballer(canvas, 655, self.dy + self.y2, 'blue')
+        self.f3 = Footballer(canvas, 655, 2 * self.dy + self.y2, 'blue')
+        self.f4 = Footballer(canvas, 405, self.y3, 'blue')
+        self.f5 = Footballer(canvas, 405, self.dy + self.y3, 'blue')
+        self.f6 = Footballer(canvas, 405, 2 * self.dy + self.y3, 'blue')
+        self.f7 = Footballer(canvas, 155, self.y1, 'blue')
 
-        self.id = self.canvas.create_oval(self.x1 - self.r, self.y3 - self.r,
-                                          self.x1 + self.r, self.y3 + self.r,
-                                          fill='blue')
+        self.footballers = [self.f1, self.f2, self.f3, self.f4, self.f5,
+                            self.f6, self.f7]
 
-    def bind(self):
+    def bind(self):  # bind button press and release
         pass
+
+    def update_each_footballer(self):
+        self.f1.y = self.y1
+        self.f2.y = self.dy + self.y1
+        self.f3.y = 2 * self.dy + self.y1
+        self.f4.y = self.y2
+        self.f5.y = self.dy + self.y1
+        self.f6.y = 2 * self.dy + self.y1
+        self.f7.y = self.y3
+
+    def update(self):
+        self.mouse_coords = self.canvas.get_mouse_coords()
+        self.pry = copy.deepcopy(self.y1)
+        self.y1 = self.mouse_coords[1] - self.dy
+        self.y2 = self.mouse_coords[1] - self.dy
+        self.y3 = self.mouse_coords[1]
+
+        self.vy = self.y1 - self.pry
+        self.update_each_footballer()
+
+        for i in range(len(self.footballers)):
+            self.footballers[i].update_coords()
 
     def remove_footballers(self):
-        pass
+        print('remove footb')
+        for i in range(len(self.footballers)):
+            self.footballers[i].remove()
 
     # def update(self):
     # self.y3 = self.canvas.get_mouse_coords[1] - self.dy
@@ -316,6 +329,7 @@ class Field(tk.Canvas):
     def update(self):  # put root.after here
         self.ball.update()
         self.red_footballers.update()
+        self.blue_footballers.update()
         self.check_hit()
         self.check_goal()
         self.after(20, self.update)
