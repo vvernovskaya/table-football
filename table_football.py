@@ -42,35 +42,35 @@ class Ball:
     def hit(self):
         print('hit')
         print('start vx ', self.vx)
-        self.vx = -self.vx
-        self.vy = -self.vy + self.canvas.red_footballers.vy
-        if self.vx <= 0:
-            self.vx -= abs(9*self.canvas.cos)
+        if self.vx >= 0:
+            self.vx = -self.vx * (2* self.canvas.cos ** 2 - 1) + self.vy * 2 * self.canvas.cos * self.canvas.sin - abs(9*self.canvas.cos)
             self.x -= 5
+            self.vy = self.vx * 2 * self.canvas.sin * self.canvas.cos + self.vy * (2* self.canvas.cos ** 2 -1) + 2 * self.canvas.red_footballers.vy
         else:
-            self.vx += abs(3*self.canvas.cos)
+            self.vx = -self.vx * (2* self.canvas.cos ** 2 - 1) + self.vy * 2 * self.canvas.cos * self.canvas.sin + abs(3*self.canvas.cos)
             self.x += 5
+            self.vy = self.vx * 2 * self.canvas.sin * self.canvas.cos + self.vy * (2* self.canvas.cos ** 2 -1) + 2 * self.canvas.red_footballers.vy
         print(self.vx)
         self.update()
 
     def update(self):
-        if self.y >= 600 or self.y <= 0:
-            if self.y >= 600:
-                self.y = 595
+        if self.y >= 560 or self.y <= 30:
+            if self.y >= 560:
+                self.y = 561
 
-            if self.y <= 0:
-                self.y = 5
+            if self.y <= 30:
+                self.y = 31
 
-            self.vy = -self.vy
+            self.vy = -self.vy * 0.8
 
-        if self.x >= 850 or self.x <= 50:
-            if self.x >= 850:
-                self.x = 835
+        if self.x >= 830 or self.x <= 70:
+            if self.x >= 830:
+                self.x = 831
 
-            if self.x <= 50:
-                self.x = 55
+            if self.x <= 70:
+                self.x = 71
 
-            self.vx = -self.vx
+            self.vx = -self.vx * 0.8
 
         self.vx = 0.99*self.vx
         self.vy = 0.99*self.vy
@@ -157,9 +157,10 @@ class RedFootballers:
     def update(self):
         self.mouse_coords = self.canvas.get_mouse_coords()
         self.pry = copy.deepcopy(self.y1)
-        self.y1 = self.mouse_coords[1] - self.dy
-        self.y2 = self.mouse_coords[1] - self.dy
-        self.y3 = self.mouse_coords[1]
+        if self.mouse_coords[1] > 30 + self.dy and self.mouse_coords[1] < 535 - self.dy:
+            self.y1 = self.mouse_coords[1] - self.dy
+            self.y2 = self.mouse_coords[1] - self.dy
+            self.y3 = self.mouse_coords[1]
 
         self.vy = self.y1 - self.pry
         self.update_each_footballer()
@@ -225,10 +226,12 @@ class BlueFootballers:
     def update(self):
         self.mouse_coords = self.canvas.get_mouse_coords()
         self.pry = copy.deepcopy(self.y1)
-        self.y1 = self.mouse_coords[1] - self.dy
-        self.y2 = self.mouse_coords[1] - self.dy
-        self.y3 = self.mouse_coords[1]
-
+        if self.mouse_coords[1] > 30 + self.dy and self.mouse_coords[1] < 535 - self.dy:
+            self.y1 = self.mouse_coords[1] - self.dy
+            self.y2 = self.mouse_coords[1] - self.dy
+            self.y3 = self.mouse_coords[1]
+        else:
+            pass
         self.vy = self.y1 - self.pry
         self.update_each_footballer()
 
