@@ -301,25 +301,29 @@ HOST = 'localhost'  # The remote host
 PORT = 50007  # The same port as used by the server
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
-    color = pickle.dumps('red')
+    color = pickle.dumps('blue')
     s.sendall(color)
 
     app = App()
     recv_data = s.recv(1024)
     recv_data = pickle.loads(recv_data)
     app.start_game(recv_data)
-    mouse_coords_red = app.main_frame.field.get_mouse_coords()
-    mouse_coords_red = pickle.dumps(mouse_coords_red)
-    s.sendall(mouse_coords_red)
+    mouse_coords_blue = app.main_frame.field.get_mouse_coords()
+    mouse_coords_blue = pickle.dumps(mouse_coords_blue)
+    s.sendall(mouse_coords_blue)
+
+    i = 0
 
     while True:
+        i += 1
+        print(i)
         recv_data = s.recv(1024)
         print('i got data')
         recv_data = pickle.loads(recv_data)
         app.main_frame.field.update_canvas(recv_data)
-        mouse_coords_red = app.main_frame.field.get_mouse_coords()
-        mouse_coords_red = pickle.dumps(mouse_coords_red)
-        print('ready to send')
-        s.sendall(mouse_coords_red)
-        print("sent")
+        mouse_coords_blue = app.main_frame.field.get_mouse_coords()
+        mouse_coords_blue = pickle.dumps(mouse_coords_blue)
+        print("ready to send")
+        s.sendall(mouse_coords_blue)
+        print('sent')
     app.mainloop()
