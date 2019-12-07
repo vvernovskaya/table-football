@@ -62,7 +62,8 @@ class Ball:
         self.y += self.vy
 
     def remove_ball(self):
-        self.live = 0
+        self.x = -60
+        self.y = -60
 
 
 class Footballer:
@@ -71,6 +72,9 @@ class Footballer:
         self.y = y
         self.r = 30
 
+    def remove(self):
+        self.x = -50
+        self.y = -50
 
 class RedFootballers:
     def __init__(self, compute):
@@ -112,7 +116,7 @@ class RedFootballers:
         self.f7.y = self.y3
 
     def update(self):
-        self.mouse_coords = self.compute.recv_data['mouse_coords_red']
+        self.mouse_coords = self.compute.recv_data_red
         self.pry = copy.deepcopy(self.y1)
         self.y1 = self.mouse_coords[1] - self.dy
         self.y2 = self.mouse_coords[1] - self.dy
@@ -120,6 +124,11 @@ class RedFootballers:
 
         self.vy = self.y1 - self.pry
         self.update_each_footballer()
+
+    def remove_footballers(self):
+        print('remove footb')
+        for i in range(len(self.footballers)):
+            self.footballers[i].remove()
 
 
 class BlueFootballers:
@@ -161,7 +170,7 @@ class BlueFootballers:
         self.f7.y = self.y3
 
     def update(self):
-        self.mouse_coords = self.compute.recv_data['mouse_coords_blue']
+        self.mouse_coords = self.compute.recv_data_blue
         self.pry = copy.deepcopy(self.y1)
         self.y1 = self.mouse_coords[1] - self.dy
         self.y2 = self.mouse_coords[1] - self.dy
@@ -170,6 +179,11 @@ class BlueFootballers:
         self.vy = self.y1 - self.pry
         self.update_each_footballer()
 
+    def remove_footballers(self):
+        print('remove footb')
+        for i in range(len(self.footballers)):
+            self.footballers[i].remove()
+
 
 class GameComputation:
     def __init__(self):
@@ -177,7 +191,8 @@ class GameComputation:
         self.red_footballers = None
         self.blue_footballers = None
 
-        self.recv_data = None
+        self.recv_data_red = None
+        self.recv_data_blue = None
 
         self.restart = 0
 
@@ -188,15 +203,9 @@ class GameComputation:
 
         self.score_red = 0
         self.score_blue = 0
-        self.ball.live = 1
+        self.live = 1
 
-        self.data = {'ball_x': self.ball.x, 'ball_y': self.ball.y, 'ball_live':
-            self.ball.live, 'red_footb_y': self.red_footballers.y +
-                                           self.red_footballers.dy,
-                     'blue_footb_y': self.blue_footballers.y + self.blue_footballers.dy,
-                     'score_red': self.red_footballers.score,
-                     'score_blue': self.blue_footballers.score,
-                     'restart': self.restart}
+        self.data = None
 
     def start(self):
         print('start')
@@ -204,7 +213,16 @@ class GameComputation:
         self.ball = Ball(self)
         self.red_footballers = RedFootballers(self)
         self.blue_footballers = BlueFootballers(self)
-        self.update()
+        self.update_data()
+
+    def update_data(self):
+        self.data = {'ball_x': self.ball.x, 'ball_y': self.ball.y, 'ball_live':
+            self.live, 'red_footb_y': self.red_footballers.y1 +
+                                           self.red_footballers.dy,
+                     'blue_footb_y': self.blue_footballers.y1 + self.blue_footballers.dy,
+                     'score_red': self.score_red,
+                     'score_blue': self.score_blue,
+                     'restart': self.restart}
 
     def remove_ball(self):
         self.ball.remove_ball()
@@ -220,10 +238,10 @@ class GameComputation:
     def check_goal(self):
         if (self.ball.y >= 210) and (self.ball.y <= 390):
             if self.ball.x >= 815:
-                self.score_red += 1
+                self.score_blue += 1
                 self.restart_game()
             if self.ball.x <= 75:
-                self.score_blue += 1
+                self.score_red += 1
                 self.restart_game()
 
     def check_hit(self):
@@ -232,7 +250,7 @@ class GameComputation:
                     (self.ball.y - self.red_footballers.footballers[i].y) ** 2 \
                     <= (
                     self.ball.r + self.red_footballers.footballers[i].r) ** 2:
-                self.mouse_coords = self.recv_data['mouse_coords_red']
+                self.mouse_coords = self.recv_data_red
                 dx = self.mouse_coords[0] - self.red_footballers.footballers[i].x
                 dy = self.mouse_coords[1] - self.red_footballers.footballers[i].y
                 if dx != 0:
@@ -251,7 +269,7 @@ class GameComputation:
                     (self.ball.y - self.blue_footballers.footballers[i].y) ** 2 \
                     <= (
                     self.ball.r + self.blue_footballers.footballers[i].r) ** 2:
-                self.mouse_coords = self.recv_data['mouse_coords_blue']
+                self.mouse_coords = self.recv_data_blue
                 dx = self.mouse_coords[0] - self.blue_footballers.footballers[i].x
                 dy = self.mouse_coords[1] - self.blue_footballers.footballers[i].y
                 if dx != 0:
@@ -265,15 +283,16 @@ class GameComputation:
 
                 self.ball.hit()
 
-    def update(self):  # put root.after here
+    def update(self, data_red, data_blue):  # put root.after here
+        self.recv_data_red = data_red
+        self.recv_data_blue = data_blue
         self.ball.update()
         self.red_footballers.update()
         self.blue_footballers.update()
         self.check_hit()
         self.check_goal()
+        self.update_data()
         time.sleep(0.02)
-        self.update()
-
 
 HOST = '' # Symbolic name meaning all available interfaces
 PORT = 50007              # Arbitrary non-privileged port
@@ -281,9 +300,44 @@ i = 0
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
     s.listen(2)
-    while i < 2:
-        i += 1
-        conn, addr = s.accept()
+    conn1, addr1 = s.accept()
+    conn2, addr2 = s.accept()
+    color1 = conn1.recv(1024)
+    color2 = conn2.recv(1024)
+    color1 = pickle.loads(color1)
+    color2 = pickle.loads(color2)
 
-game = GameComputation()
-game.start()
+    conn_red = None
+    conn_blue = None
+    addr_red = None
+    addr_blue = None
+
+    recv_data_red = None
+    recv_data_blue = None
+
+    data_to_send = None
+
+    if color1 == 'red':
+        conn_red, addr_red = conn1, addr1
+    else:
+        conn_blue, addr_blue = conn1, addr1
+
+    if color2 == 'red':
+        conn_red, addr_red = conn2, addr2
+    else:
+        conn_blue, addr_blue = conn2, addr2
+
+    game = GameComputation()
+    game.start()
+    while True:
+        data_to_send = pickle.dumps(game.data)
+        conn_red.sendall(data_to_send)
+        conn_blue.sendall(data_to_send)
+        print('i sent the data')
+        recv_data_red = conn_red.recv(1024)
+        recv_data_blue = conn_blue.recv(1024)
+        print('i got the data')
+        recv_data_red = pickle.loads(recv_data_red)
+        recv_data_blue = pickle.loads(recv_data_blue)
+        game.update(recv_data_red, recv_data_blue)
+
