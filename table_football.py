@@ -335,7 +335,8 @@ class Field(tk.Canvas):
                 self.ball.hit()
                 
     def check_velocity(self):
-        pass
+        if (self.ball.vx ** 2 + self.ball.vy ** 2) ** 0.5 <= 1:
+            self.restart()
 
     def update(self):  # put root.after here
         self.check_velocity()
