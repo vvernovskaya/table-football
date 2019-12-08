@@ -40,14 +40,17 @@ class Ball:
         self.canvas.delete(self.id)
 
     def hit(self):
+        self.mouse_coords = self.canvas.get_mouse_coords()
+        self.prx = copy.deepcopy(self.mouse_coords[0])
+        self.mouse_vx = self.mouse_coords[0] - self.prx
         print('hit')
         print('start vx ', self.vx)
         if self.vx >= 0:
-            self.vx = -self.vx * (2* self.canvas.cos ** 2 - 1) + self.vy * 2 * self.canvas.cos * self.canvas.sin - abs(9*self.canvas.cos)
+            self.vx = -self.vx * (2* self.canvas.cos ** 2 - 1) + self.vy * 2 * self.canvas.cos * self.canvas.sin - abs(9*self.canvas.cos) + self.mouse_vx
             self.x -= 5
             self.vy = self.vx * 2 * self.canvas.sin * self.canvas.cos + self.vy * (2* self.canvas.cos ** 2 -1) + 2 * self.canvas.red_footballers.vy
         else:
-            self.vx = -self.vx * (2* self.canvas.cos ** 2 - 1) + self.vy * 2 * self.canvas.cos * self.canvas.sin + abs(3*self.canvas.cos)
+            self.vx = -self.vx * (2* self.canvas.cos ** 2 - 1) + self.vy * 2 * self.canvas.cos * self.canvas.sin + abs(9*self.canvas.cos) + self.mouse_vx
             self.x += 5
             self.vy = self.vx * 2 * self.canvas.sin * self.canvas.cos + self.vy * (2* self.canvas.cos ** 2 -1) + 2 * self.canvas.red_footballers.vy
         print(self.vx)
@@ -71,7 +74,7 @@ class Ball:
                 self.x = 71
 
             self.vx = -self.vx * 0.8
-
+            
         self.vx = 0.99*self.vx
         self.vy = 0.99*self.vy
         self.x += self.vx
@@ -123,6 +126,7 @@ class RedFootballers:
         self.y1 = 160
         self.y2 = 160
         self.y3 = 320
+        self.x1 = 275
 
         self.dy = 160
 
@@ -199,6 +203,7 @@ class BlueFootballers:
 
         self.vy = 0
         self.pry = 0
+        self.prx = 0
 
         self.f1 = Footballer(canvas, 655, self.y2, 'blue')
         self.f2 = Footballer(canvas, 655, self.dy + self.y2, 'blue')
@@ -328,8 +333,12 @@ class Field(tk.Canvas):
                     self.cos = 0
 
                 self.ball.hit()
+                
+    def check_velocity(self):
+        pass
 
     def update(self):  # put root.after here
+        self.check_velocity()
         self.ball.update()
         self.red_footballers.update()
         self.blue_footballers.update()
