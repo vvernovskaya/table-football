@@ -1,9 +1,5 @@
-import copy
-import math
 import tkinter as tk
 import pickle
-from random import randrange as rnd
-from random import randrange as rnd, choice
 import socket
 
 WINDOW_SIZE = (900, 650)
@@ -12,8 +8,7 @@ DT = 30
 
 
 class Ball:
-    def __init__(self, canvas):  # k - velocity rise coefficient
-        # self.life == 0 if there are no balls on the field
+    def __init__(self, canvas):
         self.canvas = canvas
         self.x = self.canvas.recv_data['ball_x']
         self.y = self.canvas.recv_data['ball_y']
@@ -122,7 +117,6 @@ class RedFootballers:
             self.footballers[i].update_coords()
 
     def remove_footballers(self):
-        print('remove footb')
         for i in range(len(self.footballers)):
             self.footballers[i].remove()
 
@@ -164,9 +158,6 @@ class BlueFootballers:
         self.footballers = [self.f1, self.f2, self.f3, self.f4, self.f5,
                             self.f6, self.f7]
 
-    def bind(self):  # bind button press and release
-        pass
-
     def update_each_footballer(self):
         self.f1.y = self.canvas.recv_data['blue_footb_y'] - self.dy
         self.f2.y = self.canvas.recv_data['blue_footb_y']
@@ -182,7 +173,6 @@ class BlueFootballers:
             self.footballers[i].update_coords()
 
     def remove_footballers(self):
-        print('remove footb')
         for i in range(len(self.footballers)):
             self.footballers[i].remove()
 
@@ -219,7 +209,6 @@ class Field(tk.Canvas):
             WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2, text='aaaa', font=360)
 
     def start(self, data):
-        print('start')
         self.recv_data = data
         self.ball = Ball(self)
         self.red_footballers = RedFootballers(self)
@@ -242,7 +231,7 @@ class Field(tk.Canvas):
         canvas_y = self.winfo_rooty()
         return [abs_x - canvas_x, abs_y - canvas_y]
 
-    def update_canvas(self, data):  # put root.after here
+    def update_canvas(self, data):
         self.recv_data = data
         self.master.score_red_label[
             'text'] = self.master.score_red_text.format(
@@ -298,7 +287,7 @@ class App(tk.Tk):
 
 
 HOST = 'localhost'  # The remote host
-PORT = 50007  # The same port as used by the server
+PORT = 50007
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
     color = pickle.dumps('blue')
@@ -315,15 +304,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     i = 0
 
     while True:
-        i += 1
-        print(i)
         recv_data = s.recv(1024)
-        print('i got data')
         recv_data = pickle.loads(recv_data)
         app.main_frame.field.update_canvas(recv_data)
         mouse_coords_blue = app.main_frame.field.get_mouse_coords()
         mouse_coords_blue = pickle.dumps(mouse_coords_blue)
-        print("ready to send")
         s.sendall(mouse_coords_blue)
-        print('sent')
     app.mainloop()
