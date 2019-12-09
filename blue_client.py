@@ -1,6 +1,7 @@
 import tkinter as tk
 import pickle
 import socket
+from tkinter import messagebox
 
 WINDOW_SIZE = (900, 650)
 FIELD_SIZE = (860, 600)
@@ -231,6 +232,12 @@ class Field(tk.Canvas):
         canvas_y = self.winfo_rooty()
         return [abs_x - canvas_x, abs_y - canvas_y]
 
+    def check_win(self):
+        if self.recv_data['score_red'] == 6:
+            messagebox.showinfo("Winner", "Red team won!")
+        if self.recv_data['score_blue'] == 6:
+            messagebox.showinfo("Winner", "Blue team won!")
+
     def update_canvas(self, data):
         self.recv_data = data
         self.master.score_red_label[
@@ -286,7 +293,8 @@ class App(tk.Tk):
         self.main_frame.start_game(data)
 
 
-HOST = 'localhost'  # The remote host
+
+HOST = 'localhost'
 PORT = 50007
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
@@ -301,9 +309,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     mouse_coords_blue = pickle.dumps(mouse_coords_blue)
     s.sendall(mouse_coords_blue)
 
-    i = 0
-
     while True:
+        app.main_frame.field.check_win()
         recv_data = s.recv(1024)
         recv_data = pickle.loads(recv_data)
         app.main_frame.field.update_canvas(recv_data)
