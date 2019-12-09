@@ -1,1 +1,2 @@
 # table-football
+This is a game for two players. Each player can move his team's footballers. When a footballer hits the ball, the ball's velocity depends on the footballer's speed and the direction of the player's mouse. The team who first gets 6 scores wins.
