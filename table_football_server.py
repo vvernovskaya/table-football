@@ -111,6 +111,7 @@ class RedFootballers:
         self.f5.y = self.dy + self.y1
         self.f6.y = 2 * self.dy + self.y1
         self.f7.y = self.y3
+        print(self.y3)
 
     def update(self):
         self.mouse_coords = self.compute.recv_data_red
@@ -118,6 +119,7 @@ class RedFootballers:
         self.y1 = self.mouse_coords[1] - self.dy
         self.y2 = self.mouse_coords[1] - self.dy
         self.y3 = self.mouse_coords[1]
+        print(self.y3)
 
         self.vy = self.y1 - self.pry
         self.update_each_footballer()
@@ -134,9 +136,9 @@ class BlueFootballers:
 
         self.score = 0
 
-        self.y3 = 160
+        self.y3 = 320
         self.y2 = 160
-        self.y1 = 320
+        self.y1 = 160
 
         self.dy = 160
 
@@ -146,13 +148,13 @@ class BlueFootballers:
         self.pry = 0
         self.prx = 0
 
-        self.f1 = Footballer(655, self.y2)
-        self.f2 = Footballer(655, self.dy + self.y2)
-        self.f3 = Footballer(655, 2 * self.dy + self.y2)
+        self.f1 = Footballer(655, self.y1)
+        self.f2 = Footballer(655, self.dy + self.y1)
+        self.f3 = Footballer(655, 2 * self.dy + self.y1)
         self.f4 = Footballer(405, self.y3)
-        self.f5 = Footballer(405, self.dy + self.y3)
-        self.f6 = Footballer(405, 2 * self.dy + self.y3)
-        self.f7 = Footballer(155, self.y1)
+        self.f5 = Footballer(405, self.dy + self.y1)
+        self.f6 = Footballer(405, 2 * self.dy + self.y1)
+        self.f7 = Footballer(155, self.y3)
 
         self.footballers = [self.f1, self.f2, self.f3, self.f4, self.f5,
                             self.f6, self.f7]
@@ -240,12 +242,17 @@ class GameComputation:
                 self.score_red += 1
                 self.restart_game()
 
+    def check_win(self):
+        if self.score_red == 6 or self.score_blue == 6:
+            self.score_red = 0
+            self.score_blue = 0
+
     def check_hit(self):
         for i in range(len(self.red_footballers.footballers)):
             if (self.ball.x - self.red_footballers.footballers[i].x) ** 2 + \
                     (self.ball.y - self.red_footballers.footballers[
                         i].y) ** 2 \
-                    <= (
+                    < (
                     self.ball.r +
                     self.red_footballers.footballers[i].r) ** 2:
                 self.mouse_coords = self.recv_data_red
@@ -262,25 +269,33 @@ class GameComputation:
                     self.sin = 0
                     self.cos = 0
 
+                print('hit')
                 self.ball.vx = -self.ball.vx
-                self.ball.vy = -self.ball.vy + self.red_footballers.vy
+
+                if self.ball.vy * self.red_footballers.vy <= 0:
+                    self.ball.vy = -self.ball.vy + self.red_footballers.vy
+                else:
+                    self.ball.vy += self.red_footballers.vy
+
                 if self.ball.vx <= 0:
                     self.ball.vx -= abs(9 * self.cos)
-                    self.ball.x -= 10
                 else:
                     self.ball.vx += abs(3 * self.cos)
-                    self.ball.x += 10
 
-                if self.ball.vy >= 0:
-                    self.ball.y += 10
+                if self.ball.x - self.red_footballers.footballers[i].x >= 0:
+                    self.ball.x += 20
                 else:
-                    self.ball.y -= 10
-                self.ball.update()
+                    self.ball.x -= 20
+
+                if self.ball.y - self.red_footballers.footballers[i].y >= 0:
+                    self.ball.y += 20
+                else:
+                    self.ball.y -= 20
 
         for i in range(len(self.blue_footballers.footballers)):
             if (self.ball.x - self.blue_footballers.footballers[i].x) ** 2 + \
                     (self.ball.y - self.blue_footballers.footballers[i].y)**2 \
-                    <= (
+                    < (
                     self.ball.r + self.blue_footballers.footballers[i].r) ** 2:
                 self.mouse_coords = self.recv_data_blue
                 dx = self.mouse_coords[0] - self.blue_footballers.footballers[i].x
@@ -294,27 +309,34 @@ class GameComputation:
                     self.sin = 0
                     self.cos = 0
 
+                print('hit')
                 self.ball.vx = -self.ball.vx
-                self.ball.vy = -self.ball.vy + self.blue_footballers.vy
+                if self.ball.vy * self.blue_footballers.vy <= 0:
+                    self.ball.vy = -self.ball.vy + self.blue_footballers.vy
+                else:
+                    self.ball.vy += self.blue_footballers.vy
                 if self.ball.vx >= 0:
                     self.ball.vx += abs(9 * self.cos)
-                    self.ball.x += 10
                 else:
                     self.ball.vx -= abs(3 * self.cos)
-                    self.ball.x -= 10
 
-                if self.ball.vy >= 0:
-                    self.ball.y += 10
+                if self.ball.x - self.blue_footballers.footballers[i].x >= 0:
+                    self.ball.x += 20
                 else:
-                    self.ball.y -= 10
-                self.ball.update()
+                    self.ball.x -= 20
+
+                if self.ball.y - self.blue_footballers.footballers[i].y >= 0:
+                    self.ball.y += 20
+                else:
+                    self.ball.y -= 20
 
     def update(self, data_red, data_blue):
+        self.check_win()
         self.recv_data_red = data_red
         self.recv_data_blue = data_blue
-        self.ball.update()
         self.red_footballers.update()
         self.blue_footballers.update()
+        self.ball.update()
         self.check_hit()
         self.check_goal()
         self.red_footballers.prx = copy.deepcopy(self.recv_data_red[0])
@@ -365,5 +387,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         recv_data_blue = conn_blue.recv(1024)
         recv_data_red = pickle.loads(recv_data_red)
         recv_data_blue = pickle.loads(recv_data_blue)
+        if recv_data_red == 'quit' or recv_data_blue == 'quit':
+            conn_red.close()
+            conn_blue.close()
+            s.close()
+            break
         game.update(recv_data_red, recv_data_blue)
 
