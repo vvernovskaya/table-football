@@ -3,11 +3,17 @@ import math
 import tkinter as tk
 from random import randrange as rnd
 from random import randrange as rnd, choice
+import mp3play
+
+
 
 WINDOW_SIZE = (900, 650)
 FIELD_SIZE = (860, 600)
 DT = 30
 
+filename = r'music.mp3'
+clip = mp3play.load(filename)
+clip.play()
 
 class Ball:
     def __init__(self, canvas):  # k - velocity rise coefficient
@@ -373,7 +379,8 @@ class MainFrame(tk.Frame):
 
         self.field = Field(self)
         self.field.pack(fill=tk.BOTH, expand=1)
-
+        
+        
     def start_game(self):
         self.field.start()
         self.field.update()
@@ -422,6 +429,7 @@ class App(tk.Tk):
 
     def start_game(self):
         self.main_frame.start_game()
+
 
 
 app = App()
